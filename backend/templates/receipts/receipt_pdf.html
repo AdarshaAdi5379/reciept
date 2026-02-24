@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ receipt.receipt_number }}</title>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="institution-name">{{ institution_name }}</h1>
+            {% if institution_address %}
+            <p class="institution-address">{{ institution_address }}</p>
+            {% endif %}
+            {% if institution_phone or institution_email %}
+            <p class="institution-address">
+                {% if institution_phone %}Phone: {{ institution_phone }}{% endif %}
+                {% if institution_phone and institution_email %} | {% endif %}
+                {% if institution_email %}Email: {{ institution_email }}{% endif %}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Receipt Title -->
+        <h2 class="receipt-title">
+            {% if receipt.status == 'voided' %}
+            <span class="status-badge status-voided">VOIDED</span>
+            {% endif %}
+            Fee Receipt
+        </h2>
+
+        <!-- Receipt Meta -->
+        <div class="receipt-meta">
+            <div class="meta-item">
+                <div class="meta-label">Receipt No.</div>
+                <div class="meta-value">{{ receipt.receipt_number }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Date</div>
+                <div class="meta-value">{{ version.date|date:"d/m/Y" }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Version</div>
+                <div class="meta-value">v{{ version.version_number }}</div>
+            </div>
+        </div>
+
+        <!-- Student Info -->
+        <div class="student-info">
+            <div class="student-name">{{ version.student_name }}</div>
+            <div class="student-class">Class: {{ version.class_name }}</div>
+        </div>
+
+        <!-- Fee Breakdown Table -->
+        <table class="fee-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="amount">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if version.annual_fee > 0 %}
+                <tr>
+                    <td>Annual Fee</td>
+                    <td class="amount">{{ version.annual_fee|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                {% if version.tuition_fee > 0 %}
+                <tr>
+                    <td>Tuition Fee</td>
+                    <td class="amount">{{ version.tuition_fee|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                {% if version.kit_books_fee > 0 %}
+                <tr>
+                    <td>Kit & Books Fee</td>
+                    <td class="amount">{{ version.kit_books_fee|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                {% if version.activity_fee > 0 %}
+                <tr>
+                    <td>Activity Fee</td>
+                    <td class="amount">{{ version.activity_fee|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                {% if version.uniform_fee > 0 %}
+                <tr>
+                    <td>Uniform Fee</td>
+                    <td class="amount">{{ version.uniform_fee|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                <tr class="total-row">
+                    <td><strong>Total Amount</strong></td>
+                    <td class="amount"><strong>₹ {{ total_amount|floatformat:2 }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Payment Info -->
+        <div class="payment-info">
+            <strong>Payment Mode:</strong> 
+            <span class="payment-mode">{{ version.get_payment_mode_display }}</span>
+        </div>
+
+        <!-- Signatures -->
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="signature-line">Received By</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line">Authorized Signatory</div>
+            </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="terms">
+            <div class="terms-title">Terms & Conditions:</div>
+            <ul style="margin: 5px 0; padding-left: 20px;">
+                <li>This receipt is computer generated and valid without signature.</li>
+                <li>Please preserve this receipt for future reference.</li>
+                <li>For any queries, contact the accounts department.</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p style="font-size: 9pt; color: #64748b;">
+                Generated on {{ generated_at|date:"d/m/Y H:i" }} | 
+                Receipt ID: {{ receipt.id }}
+            </p>
+        </div>
+
+        <!-- Watermark for voided receipts -->
+        {% if receipt.status == 'voided' %}
+        <div class="watermark">VOIDED</div>
+        {% endif %}
+    </div>
+</body>
+</html>

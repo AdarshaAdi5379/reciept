@@ -1,0 +1,32 @@
+# Django and DRF
+Django>=4.2,<5.0
+djangorestframework>=3.14
+django-cors-headers>=4.3
+
+# Database
+psycopg2-binary>=2.9
+
+# Excel Processing
+openpyxl>=3.1
+
+# PDF Generation
+WeasyPrint>=60
+Pillow>=10.0
+
+# Environment
+python-dotenv>=1.0
+
+# Production
+gunicorn>=21.0
+
+# Future: Async tasks
+# celery>=5.3
+# redis>=4.5
+
+# Future: AWS S3
+# boto3>=1.28
+# django-storages>=1.14
+
+# Testing
+pytest>=7.4
+pytest-django>=4.7

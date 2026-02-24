@@ -1,0 +1,291 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ receipt.receipt_number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            font-family: 'Arial', sans-serif;
+            font-size: 11pt;
+            color: #000;
+            background: white;
+        }
+        
+        .receipt-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            background: white;
+        }
+        
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 3px 0;
+        }
+        
+        .header-title {
+            font-size: 13pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: underline;
+            margin-bottom: 2px;
+        }
+        
+        .institution-name {
+            font-size: 20pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: underline;
+            margin-bottom: 3px;
+        }
+        
+        .institution-address {
+            font-size: 10pt;
+            margin-bottom: 3px;
+        }
+        
+        .divider {
+            border-top: 1px solid #000;
+            width: 100%;
+        }
+
+        /* Top Details Section (DATE, NAME...) */
+        .top-details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .top-details-table td {
+            padding: 4px 6px;
+            text-align: left;
+            vertical-align: top;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+
+        .top-details-table tr:not(:last-child) {
+            border-bottom: 1px solid #000;
+        }
+
+        /* Fee Table Section */
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #000;
+        }
+        
+        .fee-table th, .fee-table td {
+            border: 1px solid #000;
+            border-bottom: none;
+            padding: 4px 6px;
+        }
+
+        .fee-table tr:first-child th {
+            border-top: none;
+        }
+
+        /* Target outermost borders of fee table elements */
+        .fee-table th:first-child, .fee-table td:first-child {
+            border-left: none;
+        }
+        .fee-table th:last-child, .fee-table td:last-child {
+            border-right: none;
+        }
+
+        .fee-table th {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+        
+        .sl-col {
+            width: 40%;
+            text-align: center !important;
+            vertical-align: middle;
+        }
+        
+        .particulars-col {
+            width: 15%;
+            text-align: left !important;
+        }
+
+        .amount-col-header {
+            width: 45%;
+            color: #000;
+            border: 2px solid #ed5326 !important;
+        }
+
+        .rupees-header {
+            width: 50%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 11pt;
+            border-bottom: 1px solid #000 !important;
+        }
+
+        .paise-header {
+            width: 50%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 11pt;
+            border-bottom: 1px solid #000 !important;
+        }
+
+        .rupees-val {
+            text-align: center !important;
+        }
+
+        .paise-val {
+            text-align: center !important;
+        }
+
+        .val-row td {
+            font-size: 11pt;
+            height: 25px; /* ensure minimum height for empty cells */
+        }
+        
+        .total-row td {
+            font-size: 12pt;
+            padding-top: 20px;
+            padding-bottom: 5px;
+        }
+        
+        .amount-in-words {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 4px 6px;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+        
+        /* Signature Section */
+        .signature-section {
+            width: 100%;
+            text-align: right;
+            padding-top: 40px;
+            padding-bottom: 10px;
+            padding-right: 80px;
+        }
+        
+        .signature-line {
+            font-size: 12pt;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .receipt-container {
+                margin: 0;
+                page-break-after: always;
+            }
+        }
+        
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 72pt;
+            color: rgba(255, 0, 0, 0.1);
+            font-weight: bold;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">FEE RECEIPT</div>
+            <div class="institution-name">{{ institution_name }}</div>
+            <div class="institution-address">{{ institution_address }}</div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <!-- Top Details block -->
+        <table class="top-details-table">
+            <tr>
+                <td colspan="2">DATE: {{ version.date|date:"d-m-Y" }}</td>
+            </tr>
+            <tr>
+                <td style="width: 50%;">NAME: {{ version.student_name|upper }}</td>
+                <td style="width: 50%;">CLASS: {{ version.class_name }}</td>
+            </tr>
+            <tr>
+                <td>Mode of Payment: {{ version.get_payment_mode_display|upper }}</td>
+                <td>RECEIPT NO: {{ receipt.receipt_number }}</td>
+            </tr>
+        </table>
+        
+        <!-- Fee Table -->
+        <table class="fee-table">
+            <thead>
+                <tr>
+                    <th class="sl-col" rowspan="2">SL.</th>
+                    <th class="particulars-col" rowspan="2">PARTICULARS</th>
+                    <th class="amount-col-header" colspan="2">AMOUNT</th>
+                </tr>
+                <tr>
+                    <th class="rupees-header">RUPEES</th>
+                    <th class="paise-header">Paise</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fee in fee_items %}
+                <tr class="val-row">
+                    <td class="sl-col">{{ forloop.counter }}</td>
+                    <td class="particulars-col">{{ fee.label }}</td>
+                    <td class="rupees-val">{% if fee.amount > 0 %}{{ fee.rupees }}{% endif %}</td>
+                    <td class="paise-val">{% if fee.amount > 0 %}0{% endif %}</td>
+                </tr>
+                {% endfor %}
+                
+                <!-- Total Row -->
+                <tr class="total-row val-row">
+                    <td class="sl-col"></td>
+                    <td class="particulars-col">TOTAL</td>
+                    <td class="rupees-val">{{ total_rupees }}</td>
+                    <td class="paise-val"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Amount in Words -->
+        <div class="amount-in-words">
+            Rupees in words - {{ amount_in_words|lower|capfirst }} only
+        </div>
+        
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-line">Accountant</div>
+        </div>
+        
+        <!-- Watermark for voided receipts -->
+        {% if receipt.status == 'voided' %}
+        <div class="watermark">VOIDED</div>
+        {% endif %}
+    </div>
+</body>
+</html>
